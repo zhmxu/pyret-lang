@@ -1,6 +1,6 @@
 PYRET_COMP0      = build/phase0/pyret.jarr
 CLOSURE          = java -jar deps/closure-compiler/compiler.jar
-NODE             = node -max-old-space-size=8192
+NODE             = node -max-old-space-size=8192 --stack-size=100000
 JS               = js
 JSBASE           = $(JS)/base
 JSTROVE          = $(JS)/trove

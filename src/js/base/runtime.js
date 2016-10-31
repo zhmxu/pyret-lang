@@ -3142,7 +3142,11 @@ function (Namespace, jsnums, codePoint, seedrandom, util) {
       var BOUNCES = 0;
       var TOS = 0;
 
-      var sync = options.sync || false;
+      // If the instantiator of the runtime OR the specific call don't want
+      // sync, don't use sync
+      // If neither specifies, don't use sync
+      // If one or both ask for it, and the other doesn't deny it, use sync
+      var sync = (!(options.sync === false || theOutsideWorld.sync === false)) && (options.sync || theOutsideWorld.sync);
       var initialGas = thisRuntime.INITIAL_GAS;
 
       var threadIsCurrentlyPaused = false;
@@ -3462,7 +3466,7 @@ function (Namespace, jsnums, codePoint, seedrandom, util) {
     }
 
     function runThunk(f, then) {
-      return thisRuntime.run(f, thisRuntime.namespace, {}, then);
+      return thisRuntime.run(f, thisRuntime.namespace, {sync: theOutsideWorld.sync}, then);
     }
 
     function execThunk(thunk) {
@@ -3485,7 +3489,7 @@ function (Namespace, jsnums, codePoint, seedrandom, util) {
         thisRuntime.run(function(_, __) {
           return thunk.app();
         }, thisRuntime.namespace, {
-          sync: false
+          sync: theOutsideWorld.sync
         }, function(result) {
           if(isFailureResult(result) &&
              isPyretException(result.exn) &&

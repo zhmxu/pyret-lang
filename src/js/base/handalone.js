@@ -9,7 +9,9 @@ require(["pyret-base/js/runtime", "program"], function(runtimeLib, program) {
 
   var runtime = runtimeLib.makeRuntime({
     stdout: function(s) { process.stdout.write(s); },
-    stderr: function(s) { process.stderr.write(s); }
+    stderr: function(s) { process.stderr.write(s); },
+    sync: true,
+    initialGas: Infinity
   });
 
   var EXIT_SUCCESS = 0;
