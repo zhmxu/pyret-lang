@@ -1,5 +1,5 @@
-define(["./namespace", "./js-numbers", "./codePoint", "seedrandom", "./runtime-util"],
-function (Namespace, jsnums, codePoint, seedrandom, util) {
+define(["./namespace", "./js-numbers", "./codePoint", "seedrandom", "./runtime-util", "stacktrace-js"],
+function (Namespace, jsnums, codePoint, seedrandom, util, stacktrace) {
 
   if(util.isBrowser()) {
     var require = requirejs;
@@ -1776,10 +1776,12 @@ function (Namespace, jsnums, codePoint, seedrandom, util) {
       if(thisRuntime.isObject(val) &&
          (thisRuntime.hasField(val, "render-reason")
           || thisRuntime.hasField(val, "render-fancy-reason"))){
-        throw new PyretFailException(val);
+        var err = new PyretFailException(val);
       } else {
-        throw new PyretFailException(thisRuntime.ffi.makeUserException(val));
+        var err = new PyretFailException(thisRuntime.ffi.makeUserException(val));
       }
+      err.synthStack = stacktrace.get();
+      throw err;
     };
     /** type {!PFunction} */
     // function raiseUserException(err) {
@@ -3337,6 +3339,7 @@ function (Namespace, jsnums, codePoint, seedrandom, util) {
               // CONSOLE.log("Frame returned, val = " + JSON.stringify(val, null, "  "));
             }
           } catch(e) {
+            debugger;
 //            console.error("Exceptions should no longer be thrown: ", e);
             if(thisRuntime.isCont(e)) {
               // CONSOLE.log("BOUNCING");
